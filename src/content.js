@@ -26,24 +26,18 @@ function addReviews() {
 function addInfo() {
     var elements = document.getElementsByClassName("ls-instructors fspmedium");
     for (let item of elements) {
-        var instructors = $(item).text().split(",");
-        console.log(instructors);
+        var instructors = $(item).text().trim().replace(new RegExp("\\s+", "g"), " ").split(",");    
         for(let name of instructors) {
-            console.log(name);
-            name = name.split(" ");
-            console.log(name);
+            name = name.trim().split(" ");
             var firstName = name[0];
             var lastName = name[name.length - 1];
-            console.log(firstName, lastName);
             var review = lookUpInstructor(firstName, lastName);
-            console.log(review);
             editPage(review, item)
         }
     }
 }
 
 function lookUpInstructor(firstName, lastName) {
-    console.log(firstName, lastName)
     const rmpAPI = "https://solr-aws-elb-production.ratemyprofessors.com//solr/rmp/select/?solrformat=true&rows=20&wt=json&json.wrf=noCB&callback=noCB&q="+ firstName + "+" + lastName +"&qf=teacherfirstname_t%5E2000+teacherlastname_t%5E2000+teacherfullname_t%5E2000+teacherfullname_autosuggest&bf=pow(total_number_of_ratings_i%2C2.1)&sort=score+desc&defType=edismax&siteName=rmp&rows=20&group=off&group.field=content_type_s&group.limit=20&fq=schoolid_s%3A1072"
     const request = $.ajax({url: rmpAPI, success: function(data) {
         console.log("Capture data success!")
@@ -53,17 +47,18 @@ function lookUpInstructor(firstName, lastName) {
         data = data.substring(5, data.length - 1);     
 
         var dataArr = JSON.parse(data).response.docs[0];
-        
-        if (response !== undefined) {
-            var OR = dataArr.averageratingscore_rf;
-            var LoD = dataArr.averageeasyscore_rf;
-            var NoR = dataArr.total_number_of_ratings_i;
+        console.log(dataArr);
+        if (dataArr !== undefined) {
+            var OR = (Array.from(dataArr).some(item => _.isEqual(item, "averageratingscore_rf"))) ? dataArr.averageratingscore_rf : "--";
+            var LoD = (Array.from(dataArr).some(item => _.isEqual(item, "averageeasyscore_rf"))) ? dataArr.averageeasyscore_rf : "--";
+            var NoR = (Array.from(dataArr).some(item => _.isEqual(item, "total_number_of_ratings_i"))) ? dataArr.total_number_of_ratings_i : "--";
         } else {
-            var OR = "-";
-            var LoD = "-";
-            var NoR = "-";
+            var OR = "--";
+            var LoD = "--";
+            var NoR = "--";
         }
-        return {OR, LoD, NoR};
+
+        return [OR, LoD, NoR];
         
     })
         .fail(function (Response) {
@@ -76,7 +71,7 @@ function editPage(review, item) {
     var hi = "-";
     $($(additional).children("span")).wrapAll("<div ></div>");
     $(additional).append("<span class=ls-label>&#9733</span>");
-    $(additional).append("<span>" + hi + "</span>");
+    $(additional).append("<span>" + review[0] + "</span>");
     $(additional).append("<span class=ls-label>&nbsp LoD:</span>");
     $(additional).append("<span>" + hi + "</span>");
     $(additional).append("<span class=ls-label>&nbsp #</span>");
