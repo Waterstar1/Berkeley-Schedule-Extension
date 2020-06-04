@@ -1,6 +1,6 @@
-chrome.browserAction.onClicked.addListener(tellContentScript)
-
+chrome.browserAction.onClicked.addListener(tellContentScript);
+console.log("random");
 function tellContentScript(tab) {
-    let msg = {text: "send it, dude"}
-    chrome.tabs.sendMessage(tab.id, msg)
+    let msg = {text: "send"}
+    chrome.tabs.sendMessage(tab.id, msg);
 }
