@@ -1,19 +1,19 @@
 {
-  "name": "Everything Pikachu",
+  "name": "RMP Berkeley Schedule",
   "version": "1.0",
   "manifest_version": 2,
   "browser_action": {
-    "default_icon": "pokeball.png",
-    "default_title": "Lookup a definition!"
+    "default_icon": "pokeball.png"
   },
   "permissions": [
+    "tabs",
     "webRequest",
     "https://solr-aws-elb-production.ratemyprofessors.com/*",
-    "https://classes.berkeley.edu/search/class/*"
+    "https://classes.berkeley.edu/search/*"
   ],
   "content_scripts": [
     {
-      "matches": ["https://classes.berkeley.edu/search/class/*"],
+      "matches": ["https://classes.berkeley.edu/search/*"],
       "css": ["sheet.css"],
       "js": ["jquery-3.5.1.js", "content.js"]
     }
