@@ -7,14 +7,17 @@ function addInfo() {
 /* Finds instructor names from Cal Schedule Website */
 function getInstructors() {
     var elements = document.getElementsByClassName("ls-instructors fspmedium");
-    var round = 0;
     for (let item of elements) {
         var instructors = $(item).text().trim().replace(new RegExp("\\s+", "g"), " ").split(",");    
         for(let name of instructors) {
             name = name.trim().split(" ");
             var firstName = name[0];
             var lastName = name[name.length - 1];
-            lookUpInstructor(firstName, lastName, item, round);
+            $(item).append("<div></div>");
+            children = $(item).children("div");
+            additional = children[children.length - 1];
+
+            lookUpInstructor(firstName, lastName, additional);
         }
     }
 }
@@ -47,11 +50,7 @@ function lookUpInstructor(firstName, lastName, element) {
 }
 
 /* Adds RateMyProfessor data to Berkeley schedule website */
-function editPage(OR, LoD, NoR, item) {
-    var additional = item;
-    $(additional).append("<div></div>");
-    children = $(additional).children("div");
-    additional = children[children.length - 1];
+function editPage(OR, LoD, NoR, additional) {
     $(additional).append("<span class=ls-label>&#9733</span>");
     $(additional).append("<span>" + OR + "</span>");
     $(additional).append("<span class=ls-label>&nbsp LoD:</span>");
