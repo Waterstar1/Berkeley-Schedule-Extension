@@ -58,4 +58,3 @@ function editPage(OR, LoD, NoR, additional) {
     $(additional).append("<span class=ls-label>&nbsp #</span>");
     $(additional).append("<span>" + NoR + "</span>");
 }
-
