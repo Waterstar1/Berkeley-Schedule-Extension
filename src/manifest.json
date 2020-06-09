@@ -1,12 +1,11 @@
 {
-  "name": "RMP Berkeley Schedule",
+  "name": "Berkeley Professor Ratings",
   "version": "1.0",
   "manifest_version": 2,
   "browser_action": {
     "default_icon": "cal_logo.png"
   },
   "permissions": [
-    "tabs",
     "webRequest",
     "https://solr-aws-elb-production.ratemyprofessors.com/*",
     "https://classes.berkeley.edu/search/*"
@@ -17,8 +16,5 @@
       "css": ["sheet.css"],
       "js": ["jquery-3.5.1.js", "content.js"]
     }
-  ],
-  "background": {
-    "scripts": ["background.js"]
-  }
+  ]
 }
