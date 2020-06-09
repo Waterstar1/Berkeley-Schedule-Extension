@@ -1,6 +1,11 @@
 
 addInfo();
 function addInfo() {
+    getInstructors();
+}
+
+/* Finds instructor names from Cal Schedule Website */
+function getInstructors() {
     var elements = document.getElementsByClassName("ls-instructors fspmedium");
     var round = 0;
     for (let item of elements) {
@@ -14,6 +19,7 @@ function addInfo() {
     }
 }
 
+/* Retrieves instructor data from RateMyProfessor API */
 function lookUpInstructor(firstName, lastName, element) {
     const rmpAPI = "https://solr-aws-elb-production.ratemyprofessors.com//solr/rmp/select/?solrformat=true&rows=20&wt=json&json.wrf=noCB&callback=noCB&q="+ firstName + "+" + lastName +"&qf=teacherfirstname_t%5E2000+teacherlastname_t%5E2000+teacherfullname_t%5E2000+teacherfullname_autosuggest&bf=pow(total_number_of_ratings_i%2C2.1)&sort=score+desc&defType=edismax&siteName=rmp&rows=20&group=off&group.field=content_type_s&group.limit=20&fq=schoolid_s%3A1072"
     const request = $.ajax({url: rmpAPI, success: function(data) {
@@ -40,6 +46,7 @@ function lookUpInstructor(firstName, lastName, element) {
     });;
 }
 
+/* Adds RateMyProfessor data to Berkeley schedule website */
 function editPage(OR, LoD, NoR, item) {
     var additional = item;
     $(additional).append("<div></div>");
@@ -52,3 +59,4 @@ function editPage(OR, LoD, NoR, item) {
     $(additional).append("<span class=ls-label>&nbsp #</span>");
     $(additional).append("<span>" + NoR + "</span>");
 }
+

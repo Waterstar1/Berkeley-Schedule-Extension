@@ -3,7 +3,7 @@
   "version": "1.0",
   "manifest_version": 2,
   "browser_action": {
-    "default_icon": "pokeball.png"
+    "default_icon": "cal_logo.png"
   },
   "permissions": [
     "tabs",
