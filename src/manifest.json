@@ -8,12 +8,18 @@
   "permissions": [
     "webRequest",
     "https://solr-aws-elb-production.ratemyprofessors.com/*",
-    "https://classes.berkeley.edu/search/*"
+    "https://classes.berkeley.edu/search/*",
+    "https://www.berkeleytime.com/api/*"
   ],
   "content_scripts": [
     {
       "matches": ["https://classes.berkeley.edu/search/*"],
-      "js": ["jquery-3.5.1.js", "content.js"]
+      "css": ["popup.css"],
+      "js": ["jquery-3.5.1.js", "content.js", "core.js"],
+      "all_frames": true
     }
-  ]
+  ],
+  "background": {
+    "scripts": ["jquery-3.5.1.js", "background.js"]
+  }
 }

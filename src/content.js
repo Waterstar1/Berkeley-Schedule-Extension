@@ -1,5 +1,42 @@
+chrome.runtime.onMessage.addListener(gotMessage);
 
-addInfo();
+function gotMessage(message, sender, sendResponse){
+    if (message.text == "send it, dude") {
+        popUp()
+    }
+}
+
+function testAPI() {
+    console.log("hi");
+    btAPI = "https://www.berkeleytime.com/api/grades/grades_json/?form=long";
+    const request = $.ajax({url: btAPI, success: function(data) {
+        console.log("Capture data success!")
+    }}).done(function (response) {
+        console.log(response); 
+        
+        var catalog = response.courses;
+        console.log(catalog);
+        console.log(catalog[0].abbreviation);
+        
+        const toCourseIDS = new Map();
+        for(key in catalog) {
+            value = catalog[key];
+            toCourseIDS.set(value.title.toLowerCase().replace(new RegExp("\\s+", "g"), ""), value.id);
+        }
+        console.log(toCourseIDS);
+    })
+        .fail(function (Response) {
+    });;
+}
+
+function popUp() {
+    var elements = document.getElementsByClassName("ls-course-title fmpbook");
+    $(elements[0]).append("<div id='popup' style='display: none'>description text here</div>");
+    
+}
+
+
+//addInfo();
 function addInfo() {
     getInstructors();
 }
