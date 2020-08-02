@@ -1,10 +1,6 @@
-chrome.runtime.onMessage.addListener(gotMessage);
-
-function gotMessage(message, sender, sendResponse){
-    if (message.text == "send it, dude") {
-    }
-}
 getCatalog();
+
+SPECIAL_CASES = {ARESEC: "A,RESEC"}
 
 function getCatalog() {
     btAPI = "https://www.berkeleytime.com/api/grades/grades_json/?form=long";
@@ -12,8 +8,11 @@ function getCatalog() {
         var catalog = response.courses;
         toCourseIDS = new Map();
         for(key in catalog) {
-            value = catalog[key];
-            toCourseIDS.set(value.title.toLowerCase().replace(new RegExp("\\s+", "g"), ""), value.id);
+            var value = catalog[key];
+            var courseTitle = value.title;
+            var courseAbbr = value.abbreviation;
+            var courseKey = courseAbbr + courseTitle.toLowerCase().replace(new RegExp("\\s+", "g"), "");
+            toCourseIDS.set(courseKey, value.id);
         }
         addInfo();
     })
@@ -32,9 +31,20 @@ function getInstructors() {
 
     for (let item of elements) {
 
-        // Finds course title for respectively respective professors
+        // Finds course title for respective professors
         var courseTitle = item.parentNode.querySelector('.ls-course-title').innerHTML;
         var simpleCourseTitle = courseTitle.toLowerCase().replace(new RegExp("\\s+", "g"), "")
+        
+        // Finds course section name for respective professors
+        var courseSectionName = item.parentNode.querySelector('.ls-section-name').innerHTML;
+        var courseAbbr = courseSectionName.trim().split(" ")[0];
+
+        //Checks if courseAbbr is a special case
+        if (SPECIAL_CASES.hasOwnProperty(courseAbbr)) {
+            courseAbbr = SPECIAL_CASES[courseAbbr];
+        }
+
+        var courseKey = courseAbbr + simpleCourseTitle
 
         // Parses instructor description into multiple professors if possible 
         var instructors = $(item).text().trim().replace(new RegExp("\\s+", "g"), " ").split(",");
@@ -51,13 +61,13 @@ function getInstructors() {
             var children = $(item).children("div");
             var additional = children[children.length - 1];
 
-            lookUpInstructor(firstName, lastName, additional, simpleCourseTitle);
+            lookUpInstructor(firstName, lastName, additional, courseKey);
         }
     }
 }
 
 /* Retrieves instructor data from RateMyProfessor API */
-function lookUpInstructor(firstName, lastName, element, simpleCourseTitle) {
+function lookUpInstructor(firstName, lastName, element, courseKey) {
     const rmpAPI = "https://solr-aws-elb-production.ratemyprofessors.com//solr/rmp/select/?solrformat=true&rows=20&wt=json&json.wrf=noCB&callback=noCB&q="+ firstName + "+" + lastName +"&qf=teacherfirstname_t%5E2000+teacherlastname_t%5E2000+teacherfullname_t%5E2000+teacherfullname_autosuggest&bf=pow(total_number_of_ratings_i%2C2.1)&sort=score+desc&defType=edismax&siteName=rmp&rows=20&group=off&group.field=content_type_s&group.limit=20&fq=schoolid_s%3A1072"
     const request = $.ajax({url: rmpAPI}).done(function (response) {  
 
@@ -76,14 +86,14 @@ function lookUpInstructor(firstName, lastName, element, simpleCourseTitle) {
             var NoR = "--";
         }
 
-        editPage(OR, LoD, NoR, element, firstName, lastName, simpleCourseTitle);
+        editPage(OR, LoD, NoR, element, firstName, lastName, courseKey);
     })
         .fail(function (Response) {
     });;
 }
 
 /* Adds RateMyProfessor data to Berkeley schedule website */
-function editPage(OR, LoD, NoR, additional, firstName, lastName, simpleCourseTitle) {
+function editPage(OR, LoD, NoR, additional, firstName, lastName, courseKey) {
 
     // Rate My Professor additions
     $(additional).append("<span class=ls-label>&#9733</span>");
@@ -99,7 +109,7 @@ function editPage(OR, LoD, NoR, additional, firstName, lastName, simpleCourseTit
     button.innerText = "Grades!"
 
     additional.appendChild(button);
-    button.setAttribute("courseTitle", simpleCourseTitle);
+    button.setAttribute("courseKey", courseKey);
 
     // Parses instructor to match Berkeley Time API
     parsedName = lastName + ", " + firstName.substring(0, 1);
@@ -115,13 +125,16 @@ function showInfo(button, parent, firstName, lastName) {
         var containerCheck = parent.querySelector(".grade-container");
 
         if (!containerCheck) {
-            var courseID = toCourseIDS.get(button.getAttribute("courseTitle"));
+            console.log(button.getAttribute("courseKey"));
+            var courseID = toCourseIDS.get(button.getAttribute("courseKey"));
+            console.log(courseID);
             var gradeIDURL = "https://www.berkeleytime.com/api/grades/course_grades/" + courseID + "/"
+
             const request = $.ajax({url: gradeIDURL}).done(function (response) {  
 
                 var gradeIDArr = []; 
                 var allGradeIDArr = [];
-                for (var i = 0; i < response.length; i++) {
+                for (var i = 0; i < response.length; i++) { 
                     var instructor = response[i].instructor;
                     var grade_id = response[i].grade_id
                     if (instructor == button.getAttribute("instructor")) {
@@ -141,6 +154,7 @@ function showInfo(button, parent, firstName, lastName) {
                     titleText = "All Sections Grade Distribution";
                 }
                 
+                console.log(gradeDataURL);
                 var container = document.createElement("div");
                 container.className = "grade-container hide";
 
@@ -148,7 +162,7 @@ function showInfo(button, parent, firstName, lastName) {
                 popup.className = "grade-popup";
 
                 var title = document.createElement("div");
-                title.className = "graph-title";
+                title.className = "grade-title";
                 title.innerText = titleText;
 
                 popup.append(title);
@@ -175,8 +189,13 @@ function addGradeInfo(gradeDataURL, popup) {
     graph.height = "800";
     var grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F', 'P', 'NP'];
     var values = [];
-    var sectionGPA = document.createElement('div');
-    var courseGPA = document.createElement('div');
+    
+    var bothGPA = document.createElement('div');
+    bothGPA.className = "grade-gpa"
+    var sectionGPA = document.createElement('span');
+    var courseGPA = document.createElement('span');
+    bothGPA.append(sectionGPA);
+    bothGPA.append(courseGPA);
 
     const request = $.ajax({url: gradeDataURL}).done(function (response) {  
     
@@ -184,20 +203,19 @@ function addGradeInfo(gradeDataURL, popup) {
             var percent = response[letter].percent
             values.push(percent);
         } 
+        console.log(values);
         gradeDistribution(graph, grades, values);
-        sectionGPA.innerText = "Section GPA: " + response["section_gpa"];
-        courseGPA.innerText = "Course GPA: " + response["course_gpa"];
+        sectionGPA.innerHTML = "Section GPA: " + response["section_gpa"] + " &#9679 ";
+        courseGPA.innerHTML = "Course GPA: " + response["course_gpa"];
     
     })
         .fail(function (Response) {
             values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             gradeDistribution(graph, grades, values);
-            sectionGPA.innerText = "Section GPA: N/A";
+            sectionGPA.innerText = "Section GPA: N/A &#9679 ";
             courseGPA.innerText = "Course GPA: N/A";
-    });;
-    console.log(sectionGPA);
-    popup.append(sectionGPA);
-    popup.append(courseGPA);
+    });
+    popup.append(bothGPA);
     popup.append(graph);
 }
 
@@ -209,7 +227,7 @@ function gradeDistribution(graph, grades, values) {
             labels: grades,
             datasets: [{
                 label: "Percentages",
-                backgroundColor: "rgba(1,22,50,0.5)", 
+                backgroundColor: "#2e8ed6", 
                 data: values
             }],
         },
@@ -233,9 +251,3 @@ function removeInfo(button, parent) {
         }   
       }
 }
-
-
-function requestGrades(simpleCourseTitle) {
-    btAPI = "https://www.berkeleytime.com/api/grades/grades_json/?form=long";
-}
- 

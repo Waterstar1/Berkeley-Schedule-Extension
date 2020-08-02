@@ -18,8 +18,5 @@
       "js": ["jquery-3.5.1.js", "moment.min.js", "chart.js", "content.js"],
       "run_at": "document_end"
     }
-  ],
-  "background": {
-    "scripts": ["jquery-3.5.1.js", "background.js"]
-  }
+  ]
 }

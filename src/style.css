@@ -34,7 +34,7 @@
     bottom: 1px;
 	left: 1px;
 	width: 400px;
-	height: 300px;
+	height: 305px;
 	z-index: 100000;
     display: block;
 	background-color: white;
@@ -42,4 +42,16 @@
 	text-align: center;
 	border-style: solid;
 	border-width: 2px;
+}
+
+.grade-title{
+	font-size: 16px;
+    color: black;
+    font-weight: 2000;
+}
+
+.grade-gpa{
+	font-size: 13px;
+    color: gray;
+    font-weight: 2000;
 }
