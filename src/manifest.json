@@ -2,9 +2,7 @@
   "name": "Berkeley Professor Ratings",
   "version": "1.1",
   "manifest_version": 2,
-  "browser_action": {
-    "default_icon": "cal_logo.png"
-  },
+  "description": "Adds addition info to Berkeley Class Catalog",
   "permissions": [
     "webRequest",
     "https://solr-aws-elb-production.ratemyprofessors.com/*",
@@ -18,5 +16,10 @@
       "js": ["jquery-3.5.1.js", "moment.min.js", "chart.js", "content.js"],
       "run_at": "document_end"
     }
-  ]
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png" 
+  }
 }
