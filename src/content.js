@@ -1,28 +1,37 @@
 getCatalog();
 
-SPECIAL_CASES_ABBR = {ARESEC: "A,RESEC", CIVENG: "CIV ENG", LS: "L & S", ELENG: "EL ENG", BIOENG: "BIO ENG",
-CHMENG: "CHM ENG", INDENG: "IND ENG", MECENG: "MEC ENG", NUCENG: "NUC ENG", POLSCI: "POL SCI", PUBPOL: "PUB POL"};
+// Special cases converting Course Abbr/Numbers, to that represented in Berkeley Time API
+SPECIAL_CASES_ABBR = {ARESEC: "A,RESEC", LS: "L & S"}
 SPECIAL_CASES_NUMBER = {};
 
+/* Retrieves catalog from Berkeley Time API */
 function getCatalog() {
     btAPI = "https://www.berkeleytime.com/api/grades/grades_json/?form=long";
     const request = $.ajax({url: btAPI}).done(function (response) {
         var catalog = response.courses;
+
+        // Creates map from key to course_id, for faster retrieval
         toCourseIDS = new Map();
         for(key in catalog) {
             var value = catalog[key];
+
+            // Key is a combination of course Abbr/Number/Title
             var courseTitle = value.title;
-            var courseAbbr = value.abbreviation;
+            var courseAbbr = value.abbreviation.replace(new RegExp("\\s+", "g"), "");
             var courseNum = value.course_number
             var courseKey = courseAbbr + courseNum + courseTitle.toLowerCase().replace(new RegExp("\\s+", "g"), "");
+
             toCourseIDS.set(courseKey, value.id);
         }
+
         addInfo();
     })
         .fail(function (Response) {
+        // Fails to get catalog, extension does nothing.
     });;
 }
 
+/* Process to begin editing page */
 function addInfo() {
     getInstructors();
 }
@@ -85,6 +94,8 @@ function lookUpInstructor(firstName, lastName, element, courseKey) {
         data = data.substring(5, data.length - 1);     
 
         var dataArr = JSON.parse(data).response.docs[0];
+
+        // Checks if properties are present, else sents to '--' 
         if (dataArr !== undefined) {
             var OR = (dataArr.hasOwnProperty("averageratingscore_rf")) ? dataArr.averageratingscore_rf : "--";
             var LoD = (dataArr.hasOwnProperty("averageeasyscore_rf")) ? dataArr.averageeasyscore_rf : "--";
@@ -98,6 +109,7 @@ function lookUpInstructor(firstName, lastName, element, courseKey) {
         editPage(OR, LoD, NoR, element, firstName, lastName, courseKey);
     })
         .fail(function (Response) {
+        // Fails to get RMP call, extension does nothing.
     });;
 }
 
@@ -129,19 +141,25 @@ function editPage(OR, LoD, NoR, additional, firstName, lastName, courseKey) {
     button.addEventListener("mouseout", removeInfo(button, additional));
 }
 
+/* Creates popup and displays it if already created */
 function showInfo(button, parent, firstName, lastName) {
     return function() {
+
+        // See if container is present already
         var containerCheck = parent.querySelector(".grade-container");
 
         if (!containerCheck) {
-            console.log(button.getAttribute("courseKey"));
+
+            // Retrieves courseID from map
             var courseID = toCourseIDS.get(button.getAttribute("courseKey"))
-            console.log(courseID);
+
+            // If courseID is present, look it up, else create dummy button
             if (typeof courseID !== 'undefined') {
                 var gradeIDURL = "https://www.berkeleytime.com/api/grades/course_grades/" + courseID + "/"
 
                 const request = $.ajax({url: gradeIDURL}).done(function (response) {  
 
+                    // Creates ID arrays in order to form Berkeley Time URLS for grade data
                     var gradeIDArr = []; 
                     var allGradeIDArr = [];
                     for (var i = 0; i < response.length; i++) { 
@@ -155,8 +173,8 @@ function showInfo(button, parent, firstName, lastName) {
 
                     var gradeDataURL;
                     var titleText;
-                    console.log(gradeIDArr);
-                    console.log(allGradeIDArr.length);
+
+                    // If ID Array with particular professor is not empty, set URL to that, else set it to the general section
                     if (gradeIDArr.length > 0) {
                         gradeDataURL = "https://www.berkeleytime.com/api/grades/sections/" + gradeIDArr.join("&") + "/";
                         titleText = firstName + " " + lastName + "'s Grade Distribution";
@@ -166,12 +184,15 @@ function showInfo(button, parent, firstName, lastName) {
                         titleText = "All Sections Grade Distribution";
                     }
                     
+                    // Create container for popup
                     var container = document.createElement("div");
                     container.className = "grade-container hide";
-
+                    
+                    // Create popup
                     var popup = document.createElement("div");
                     popup.className = "grade-popup";
 
+                    // Create popup title
                     var title = document.createElement("div");
                     title.className = "grade-title";
                     title.innerText = titleText;
@@ -179,83 +200,114 @@ function showInfo(button, parent, firstName, lastName) {
                     popup.append(title);
                     addGradeInfo(gradeDataURL, popup);
                     
+                    // Attach popup to container, and container to page
                     container.appendChild(popup);
                     parent.append(container);
+
+                    // Show container
                     container.className = "grade-container show"      
 
                 })
                     .fail(function (Response) {
+                        // If fails, set container to dummy container
+                        var container = document.createElement("div");
+                        container.className = "grade-container hide";
+                        parent.append(container);
+                        container.className = "grade-container show" 
                 });;
             } else {
+                // If courseID not present, set container to dummy container
                 var container = document.createElement("div");
                 container.className = "grade-container hide";
                 parent.append(container);
                 container.className = "grade-container show"   
             }
         } else {
+            // Shows popup when hovering button
             containerCheck.className = "grade-container show";
-
         }
     }
 }
 
-
+/* Creates and adds popup content to the actual popup */
 function addGradeInfo(gradeDataURL, popup) {
+
+    // Create a canvas for chart.js
     var graph = document.createElement('canvas');
     graph.width = "1200";
     graph.height = "800";
+
+    // Create data for grade distribution
     var grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F', 'P', 'NP'];
     var values = [];
-    
+
+    // Creates division on popup to display course/section gpas
     var bothGPA = document.createElement('div');
     bothGPA.className = "grade-gpa"
+
     var sectionGPA = document.createElement('span');
     var courseGPA = document.createElement('span');
+
     bothGPA.append(sectionGPA);
     bothGPA.append(courseGPA);
 
-    console.log(gradeDataURL);
+    // Requests grade data from Berkeley Time API
     const request = $.ajax({url: gradeDataURL}).done(function (response) {  
-    
+        
+        // Extracts percentages from json response
         for (letter of grades) {
             var percent = response[letter].percent
             values.push(percent * 100);
         } 
-        console.log(values);
+
+        // If class is PNP, calculate percentages
         values = checkPNP(values, response);
+
+        // Set section and course data text 
         sectionGPA.innerHTML = "Section GPA: " + response["section_gpa"] + " &#9679 ";
         courseGPA.innerHTML = "Course GPA: " + response["course_gpa"];
 
+        // Create grade distribution graph
         gradeDistribution(graph, grades, values);
     
     })
         .fail(function (Response) {
+            // If call fails, set graph values to default
             values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             gradeDistribution(graph, grades, values);
             sectionGPA.innerText = "Section GPA: N/A &#9679 ";
             courseGPA.innerText = "Course GPA: N/A";
     });
+
+    // Append elements to popup
     popup.append(bothGPA);
     popup.append(graph);
 }
 
+/* Sets P/NP values to respective percentages based on number students */
 function checkPNP(values, response) {
+
+    // If not PNP class, return default
     if (response.section_gpa != -1.0) {
         return values;
     } 
-
+    
     var p = response.P.numerator;
     var np = response.NP.numerator;
 
+    // Calculates percentages for P/NP and adds to values
     var pPercent = p / (p + np);
     var npPercent = np / (p + np);
-    values[values.length - 2] = pPercent;
-    values[values.length - 1] = npPercent;
+    values[values.length - 2] = pPercent * 100;
+    values[values.length - 1] = npPercent * 100;
 
     return values; 
 }
 
+/* Creates bar chart with grade data and attaches it to canvas */
 function gradeDistribution(graph, grades, values) {
+
+    // Format for create chart with Chart.js
     var ctx = graph.getContext("2d");
     var myChart = new Chart(ctx, {
         type: "bar",
@@ -279,8 +331,11 @@ function gradeDistribution(graph, grades, values) {
     });
 }
 
+/* Handles mouse leaving button event */
 function removeInfo(button, parent) {
     return function(){
+        
+        /* Hide container if container present */
         var container = parent.querySelector(".grade-container")
         if (container) {
             container.className="grade-container hide";
