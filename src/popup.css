@@ -32,12 +32,16 @@
 .grade-popup{
     position: relative;
     bottom: 1px;
-    left: 1px;
+	left: 1px;
+	width: 400px;
+	height: 300px;
+	z-index: 100000;
     display: block;
-    background-color: #3496E1;
-    border-color: #3496E1;	
-    width: 130px;
-    text-align: center;
+    background-color: white;
+    border-color: black;	
+	text-align: center;
+	border-style: solid;
+	border-width: 2px;
 }
 
 /* Popup Grades Dist */

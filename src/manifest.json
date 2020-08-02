@@ -15,7 +15,7 @@
     {
       "matches": ["https://classes.berkeley.edu/search/*"],
       "css": ["popup.css"],
-      "js": ["jquery-3.5.1.js", "content.js"],
+      "js": ["jquery-3.5.1.js", "moment.min.js", "chart.js", "content.js"],
       "run_at": "document_end",
       "all_frames": true
     }
