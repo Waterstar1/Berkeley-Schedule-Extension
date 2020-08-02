@@ -1,27 +1,66 @@
-/* Tooltip container */
-.crx_mouse_visited {
-    position: relative;
-    display: block;
-  }
-  
-  /* Tooltip text */
-  .crx_mouse_visited .popup {
-    visibility: hidden;
-    margin-left: 20px;
-    width: 120px;
-    height: 120px;
-    background-color: black;
+/* Button modifiers */
+.grade-button {
+	position: relative;
+	margin-left: 10px;
+    margin-bottom: 4px;
+    float: static;
+
+	background-color: #3496E1;
+	border-width: 1px;
+	border-radius: 1px;
+	border-color: #3496E1;	
+	height: 14px;
+	width: 26px;
+
+	text-indent: 1px;
+    font-size: 12px;
     color: black;
+    font-weight: 700;
+}
+
+/* Popup modifiers */
+.grade-container.show{
+	display: block;
+	top: 5px;
+	left: -65px;
+}
+
+.grade-container.hide{
+	display: none;
+}
+
+.grade-popup{
+	position: relative;
+	display: block;
+	float: right;
+
+    width: 130px;
     text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-   
-    /* Position the tooltip text - see examples below! */
-    position: absolute;
-    z-index: 1;
-  }
-  
-  /* Show the tooltip text when you mouse over the tooltip container */
-  .crx_mouse_visited:hover .popup {
-    visibility: visible;
-  }
+}
+
+/* Popup Grades Dist */
+.grades-dist-table{
+	margin-top: 5px;
+	width:100%;
+}
+.grades-dist-table-title-cell{
+	padding: 5px;
+	font-size: 12px;
+	line-height: 12px;
+	color: #FFFFFF;
+}
+.grades-dist-bar-cell{
+	padding-right: 2px;
+	padding-left: 2px;
+}
+.grades-dist-bar{
+	position: relative;
+	background-color: #3496E1;
+	border-width: 1px;
+	border-radius: 1px;
+	border-color: #3496E1;	
+}
+.grades-dist-grade-label-cell{
+	font-size: 10px;
+
+}
