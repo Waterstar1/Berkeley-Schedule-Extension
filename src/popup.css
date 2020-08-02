@@ -5,10 +5,10 @@
     margin-bottom: 4px;
     float: static;
 
-	background-color: #3496E1;
+	background-color: white;
 	border-width: 1px;
 	border-radius: 1px;
-	border-color: #3496E1;	
+	border-color: darkgray;	
 	height: 14px;
 	width: 26px;
 
@@ -19,10 +19,10 @@
 }
 
 /* Popup modifiers */
-.grade-container.show{
+.grade-container.show {
+    position: absolute;
 	display: block;
-	top: 5px;
-	left: -65px;
+
 }
 
 .grade-container.hide{
@@ -30,10 +30,12 @@
 }
 
 .grade-popup{
-	position: relative;
-	display: block;
-	float: right;
-
+    position: relative;
+    bottom: 1px;
+    left: 1px;
+    display: block;
+    background-color: #3496E1;
+    border-color: #3496E1;	
     width: 130px;
     text-align: center;
 }

@@ -77,14 +77,14 @@ function lookUpInstructor(firstName, lastName, element, simpleCourseTitle) {
             var NoR = "--";
         }
 
-        editPage(OR, LoD, NoR, element, simpleCourseTitle);
+        editPage(OR, LoD, NoR, element, firstName, lastName, simpleCourseTitle);
     })
         .fail(function (Response) {
     });;
 }
 
 /* Adds RateMyProfessor data to Berkeley schedule website */
-function editPage(OR, LoD, NoR, additional, simpleCourseTitle) {
+function editPage(OR, LoD, NoR, additional, firstName, lastName, simpleCourseTitle) {
 
     // Rate My Professor additions
     $(additional).append("<span class=ls-label>&#9733</span>");
@@ -97,25 +97,90 @@ function editPage(OR, LoD, NoR, additional, simpleCourseTitle) {
     //Add grade distribution button
     var button = document.createElement("a");
     button.className = "grade-button";
-    button.innerText = "Button!"
+    button.innerText = "Grades!"
 
     additional.appendChild(button);
+    button.setAttribute("courseTitle", simpleCourseTitle);
 
-    requestGrades(simpleCourseTitle)
+    // Parses instructor to match Berkeley Time API
+    parsedName = lastName + ", " + firstName.substring(0, 1);
+    button.setAttribute("instructor", parsedName.toUpperCase());
+
+    // Handles popup events due to mouse hovering over the button
+    button.addEventListener("mouseover", showInfo(button, additional));
+    button.addEventListener("mouseout", removeInfo(button, additional));
+}
+
+function showInfo(button, parent) {
+    return function() {
+        var containerCheck = parent.querySelector(".grade-container");
+
+        if (!containerCheck) {
+            var courseID = toCourseIDS.get(button.getAttribute("courseTitle"));
+            var gradeIDURL = "https://www.berkeleytime.com/api/grades/course_grades/" + courseID + "/"
+            const request = $.ajax({url: gradeIDURL}).done(function (response) {  
+
+                var gradeIDArr = []; 
+                console.log(response.length);
+                for (i = 0; i < response.length; i++) {
+                    var instructor = response[i].instructor;
+                    if (instructor == button.getAttribute("instructor")) {
+                        gradeIDArr.push(response[i].grade_id);
+                    }
+                }
+                var gradeDataURL = "https://www.berkeleytime.com/api/grades/sections/" + gradeIDArr.join("&") + "/";
+                
+                var container = document.createElement("div");
+                container.className = "grade-container hide";
+
+                var popup = document.createElement("div");
+                popup.className = "grade-popup";
+
+
+                popup.innerHTML = "hello";
+                var graph = gradeDistribution(gradeDataURL);
+                popup.appendChild(graph);
+
+                container.appendChild(popup);
+                parent.append(container);
+                    
+
+
+                //container.className = "grade-container show ";
+
+            })
+                .fail(function (Response) {
+            });;
+        } else {
+            containerCheck.className = "grade-container show";
+
+        }
+    }
+}
+
+
+function gradeDistribution(gradeDataURL) {
+    var graph = document.createElement('table');
+    graph.className = "grades-dist-table";
+
+    const request = $.ajax({url: gradeDataURL}).done(function (response) {  
+        console.log(response);
+
+    })
+        .fail(function (Response) {
+    });;
+    return graph;
 
 }
 
-function requestGrades() {
+function removeInfo(button, parent) {
+    return function(){
+        parent.querySelector(".grade-container").className="grade-container hide";
+      }
+}
+
+
+function requestGrades(simpleCourseTitle) {
     btAPI = "https://www.berkeleytime.com/api/grades/grades_json/?form=long";
 }
  
-
-
-
-
-
-function popUp() {
-    var elements = document.getElementsByClassName("ls-course-title fmpbook");
-    $(elements[0]).append("<div id='popup' style='display: none'>description text here</div>");
-    
-}
