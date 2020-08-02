@@ -1,6 +1,7 @@
 getCatalog();
 
-SPECIAL_CASES_ABBR = {ARESEC: "A,RESEC"};
+SPECIAL_CASES_ABBR = {ARESEC: "A,RESEC", CIVENG: "CIV ENG", LS: "L & S", ELENG: "EL ENG", BIOENG: "BIO ENG",
+CHMENG: "CHM ENG", INDENG: "IND ENG", MECENG: "MEC ENG", NUCENG: "NUC ENG", POLSCI: "POL SCI", PUBPOL: "PUB POL"};
 SPECIAL_CASES_NUMBER = {};
 
 function getCatalog() {
@@ -43,13 +44,13 @@ function getInstructors() {
 
         //Checks if courseAbbr is a special case
         if (SPECIAL_CASES_ABBR.hasOwnProperty(courseAbbr)) {
-            courseAbbr = SPECIAL_CASES[courseAbbr];
+            courseAbbr = SPECIAL_CASES_ABBR[courseAbbr];
         }
 
         var courseNum = courseSectionName[1];
         //Checks if courseAbbr is a special case
         if (SPECIAL_CASES_NUMBER.hasOwnProperty(courseNum)) {
-            courseAbbr = SPECIAL_CASES[courseNum];
+            courseAbbr = SPECIAL_CASES_NUMBER[courseNum];
         }
 
         var courseKey = courseAbbr + courseNum + simpleCourseTitle
