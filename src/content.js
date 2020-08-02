@@ -133,7 +133,9 @@ function showInfo(button, parent, firstName, lastName) {
         var containerCheck = parent.querySelector(".grade-container");
 
         if (!containerCheck) {
-            var courseID = toCourseIDS.get(button.getAttribute("courseKey"));
+            console.log(button.getAttribute("courseKey"));
+            var courseID = toCourseIDS.get(button.getAttribute("courseKey"))
+            console.log(courseID);
             if (typeof courseID !== 'undefined') {
                 var gradeIDURL = "https://www.berkeleytime.com/api/grades/course_grades/" + courseID + "/"
 
@@ -152,6 +154,8 @@ function showInfo(button, parent, firstName, lastName) {
 
                     var gradeDataURL;
                     var titleText;
+                    console.log(gradeIDArr);
+                    console.log(allGradeIDArr.length);
                     if (gradeIDArr.length > 0) {
                         gradeDataURL = "https://www.berkeleytime.com/api/grades/sections/" + gradeIDArr.join("&") + "/";
                         titleText = firstName + " " + lastName + "'s Grade Distribution";
@@ -209,15 +213,19 @@ function addGradeInfo(gradeDataURL, popup) {
     bothGPA.append(sectionGPA);
     bothGPA.append(courseGPA);
 
+    console.log(gradeDataURL);
     const request = $.ajax({url: gradeDataURL}).done(function (response) {  
     
         for (letter of grades) {
             var percent = response[letter].percent
-            values.push(percent);
+            values.push(percent * 100);
         } 
-        gradeDistribution(graph, grades, values);
+        console.log(values);
+        values = checkPNP(values, response);
         sectionGPA.innerHTML = "Section GPA: " + response["section_gpa"] + " &#9679 ";
         courseGPA.innerHTML = "Course GPA: " + response["course_gpa"];
+
+        gradeDistribution(graph, grades, values);
     
     })
         .fail(function (Response) {
@@ -228,6 +236,22 @@ function addGradeInfo(gradeDataURL, popup) {
     });
     popup.append(bothGPA);
     popup.append(graph);
+}
+
+function checkPNP(values, response) {
+    if (response.section_gpa != -1.0) {
+        return values;
+    } 
+
+    var p = response.P.numerator;
+    var np = response.NP.numerator;
+
+    var pPercent = p / (p + np);
+    var npPercent = np / (p + np);
+    values[values.length - 2] = pPercent;
+    values[values.length - 1] = npPercent;
+
+    return values; 
 }
 
 function gradeDistribution(graph, grades, values) {
