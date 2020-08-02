@@ -2,9 +2,9 @@ chrome.runtime.onMessage.addListener(gotMessage);
 
 function gotMessage(message, sender, sendResponse){
     if (message.text == "send it, dude") {
-        getCatalog();
     }
 }
+getCatalog();
 
 function getCatalog() {
     btAPI = "https://www.berkeleytime.com/api/grades/grades_json/?form=long";
@@ -120,14 +120,26 @@ function showInfo(button, parent, firstName, lastName) {
             const request = $.ajax({url: gradeIDURL}).done(function (response) {  
 
                 var gradeIDArr = []; 
-                console.log(response.length);
+                var allGradeIDArr = [];
                 for (var i = 0; i < response.length; i++) {
                     var instructor = response[i].instructor;
+                    var grade_id = response[i].grade_id
                     if (instructor == button.getAttribute("instructor")) {
-                        gradeIDArr.push(response[i].grade_id);
+                        gradeIDArr.push(grade_id);
                     }
+                    allGradeIDArr.push(grade_id);
                 }
-                var gradeDataURL = "https://www.berkeleytime.com/api/grades/sections/" + gradeIDArr.join("&") + "/";
+
+                var gradeDataURL;
+                var titleText;
+                if (gradeIDArr.length > 0) {
+                    gradeDataURL = "https://www.berkeleytime.com/api/grades/sections/" + gradeIDArr.join("&") + "/";
+                    titleText = firstName + " " + lastName + "'s Grade Distribution";
+                    
+                } else {
+                    gradeDataURL = "https://www.berkeleytime.com/api/grades/sections/" + allGradeIDArr.join("&") + "/";
+                    titleText = "All Sections Grade Distribution";
+                }
                 
                 var container = document.createElement("div");
                 container.className = "grade-container hide";
@@ -135,16 +147,16 @@ function showInfo(button, parent, firstName, lastName) {
                 var popup = document.createElement("div");
                 popup.className = "grade-popup";
 
+                var title = document.createElement("div");
+                title.className = "graph-title";
+                title.innerText = titleText;
 
-                popup.innerHTML = firstName + " " + lastName;
-                var graph = gradeDistribution(gradeDataURL);
-                popup.appendChild(graph);
-
+                popup.append(title);
+                addGradeInfo(gradeDataURL, popup);
+                
                 container.appendChild(popup);
                 parent.append(container);
                 container.className = "grade-container show"      
-                
-                console.log(popup);
 
             })
                 .fail(function (Response) {
@@ -157,41 +169,49 @@ function showInfo(button, parent, firstName, lastName) {
 }
 
 
-function gradeDistribution(gradeDataURL) {
+function addGradeInfo(gradeDataURL, popup) {
     var graph = document.createElement('canvas');
     graph.width = "1200";
     graph.height = "800";
     var grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F', 'P', 'NP'];
     var values = [];
+    var sectionGPA = document.createElement('div');
+    var courseGPA = document.createElement('div');
 
     const request = $.ajax({url: gradeDataURL}).done(function (response) {  
     
         for (letter of grades) {
-            values.push(response[letter].percent);
+            var percent = response[letter].percent
+            values.push(percent);
         } 
-        console.log(values);
-        editInfo(graph, grades, values);
+        gradeDistribution(graph, grades, values);
+        sectionGPA.innerText = "Section GPA: " + response["section_gpa"];
+        courseGPA.innerText = "Course GPA: " + response["course_gpa"];
     
     })
         .fail(function (Response) {
             values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            editInfo(graph, grades, values);
+            gradeDistribution(graph, grades, values);
+            sectionGPA.innerText = "Section GPA: N/A";
+            courseGPA.innerText = "Course GPA: N/A";
     });;
-    return graph;
-
+    console.log(sectionGPA);
+    popup.append(sectionGPA);
+    popup.append(courseGPA);
+    popup.append(graph);
 }
 
-function editInfo(graph, grades, values) {
-    var ctx = graph.getContext('2d');
+function gradeDistribution(graph, grades, values) {
+    var ctx = graph.getContext("2d");
     var myChart = new Chart(ctx, {
-        type: 'bar',
+        type: "bar",
         data: {
             labels: grades,
             datasets: [{
-                fillColor: "#79D1CF",
-                strokeColor: "#79D1CF",
+                label: "Percentages",
+                backgroundColor: "rgba(1,22,50,0.5)", 
                 data: values
-            }]
+            }],
         },
         options: {
             scales: {

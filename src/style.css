@@ -37,36 +37,9 @@
 	height: 300px;
 	z-index: 100000;
     display: block;
-    background-color: white;
-    border-color: black;	
+	background-color: white;
+	border-color: black;	
 	text-align: center;
 	border-style: solid;
 	border-width: 2px;
-}
-
-/* Popup Grades Dist */
-.grades-dist-table{
-	margin-top: 5px;
-	width:100%;
-}
-.grades-dist-table-title-cell{
-	padding: 5px;
-	font-size: 12px;
-	line-height: 12px;
-	color: #FFFFFF;
-}
-.grades-dist-bar-cell{
-	padding-right: 2px;
-	padding-left: 2px;
-}
-.grades-dist-bar{
-	position: relative;
-	background-color: #3496E1;
-	border-width: 1px;
-	border-radius: 1px;
-	border-color: #3496E1;	
-}
-.grades-dist-grade-label-cell{
-	font-size: 10px;
-
 }
