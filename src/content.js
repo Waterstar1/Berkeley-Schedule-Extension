@@ -1,7 +1,15 @@
+/**
+ * Chrome Extension: Berkeley Professor Ratings
+ * 
+ * Version: 1.1
+ * Author: Eustyn Trinh
+ * 
+ */ 
+
 getCatalog();
 
 // Special cases converting Course Abbr/Numbers, to that represented in Berkeley Time API
-SPECIAL_CASES_ABBR = {ARESEC: "A,RESEC", LS: "L & S"}
+SPECIAL_CASES_ABBR = {ARESEC: "A,RESEC", SSEASM: "S,SEASN", LS: "L & S", ENERES: "ENE,RES"}
 SPECIAL_CASES_NUMBER = {};
 
 /* Retrieves catalog from Berkeley Time API */
