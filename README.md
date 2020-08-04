@@ -1,8 +1,8 @@
 # Berkeley Schedule Extension
 
-### Chrome extension that improves the UC Berkeley class planning experience! Adds a variety of useful information to Berkeley Class Schedule website.
+### Chrome extension that improves the UC Berkeley class planning experience! Adds a variety of useful information to the Berkeley Class Schedule website.
 
-#### Link: https://chrome.google.com/webstore/detail/berkeley-professor-rating/leapbabjefhgjkolemigmplnnhbjkgnl?hl=en
+##### Link: https://chrome.google.com/webstore/detail/berkeley-professor-rating/leapbabjefhgjkolemigmplnnhbjkgnl?hl=en
 
 ## 
 
