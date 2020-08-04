@@ -2,10 +2,9 @@
 
 ### Chrome extension that improves the UC Berkeley class planning experience! Adds a variety of useful information to Berkeley Class Schedule website.
 
-### Link: https://chrome.google.com/webstore/detail/berkeley-professor-rating/leapbabjefhgjkolemigmplnnhbjkgnl?hl=en
+#### Link: https://chrome.google.com/webstore/detail/berkeley-professor-rating/leapbabjefhgjkolemigmplnnhbjkgnl?hl=en
 
 ## 
-# 
 
 #### Features:
 - Rate My Professor ratings including Overall Rating (★), Level of Difficulty (LoD), and Number of Reviews (#)
