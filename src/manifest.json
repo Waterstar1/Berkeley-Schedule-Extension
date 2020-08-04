@@ -1,8 +1,8 @@
 {
   "name": "Berkeley Professor Ratings",
-  "version": "1.1",
+  "version": "1.1.1",
   "manifest_version": 2,
-  "description": "Adds addition info to Berkeley Class Catalog",
+  "description": "Improves the UC Berkeley schedule-planning experience!",
   "permissions": [
     "webRequest",
     "https://solr-aws-elb-production.ratemyprofessors.com/*",

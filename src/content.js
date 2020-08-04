@@ -1,7 +1,7 @@
 /**
  * Chrome Extension: Berkeley Professor Ratings
  * 
- * Version: 1.1
+ * Version: 1.1.1
  * Author: Eustyn Trinh
  * 
  */ 
