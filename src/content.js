@@ -20,7 +20,7 @@ function getCatalog() {
 
         // Creates map from key to course_id, for faster retrieval
         toCourseIDS = new Map();
-        for(key in catalog) {
+        for(let key in catalog) {
             var value = catalog[key];
 
             // Key is a combination of course Abbr/Number/Title
@@ -170,7 +170,7 @@ function showInfo(button, parent, firstName, lastName) {
                     // Creates ID arrays in order to form Berkeley Time URLS for grade data
                     var gradeIDArr = []; 
                     var allGradeIDArr = [];
-                    for (var i = 0; i < response.length; i++) { 
+                    for (let i = 0; i < response.length; i++) { 
                         var instructor = response[i].instructor;
                         var grade_id = response[i].grade_id
                         if (instructor == button.getAttribute("instructor")) {
@@ -263,7 +263,7 @@ function addGradeInfo(gradeDataURL, popup) {
     const request = $.ajax({url: gradeDataURL}).done(function (response) {  
         
         // Extracts percentages from json response
-        for (letter of grades) {
+        for (let letter of grades) {
             var percent = response[letter].percent
             values.push(percent * 100);
         } 
