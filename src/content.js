@@ -9,7 +9,7 @@
 getCatalog();
 
 // Special cases converting Course Abbr/Numbers, to that represented in Berkeley Time API
-SPECIAL_CASES_ABBR = {ARESEC: "A,RESEC", SSEASM: "S,SEASN", LS: "L&S", ENERES: "ENE,RES"}
+SPECIAL_CASES_ABBR = {ARESEC: "A,RESEC", SSEASM: "S,SEASN", LS: "L&S", ENERES: "ENE,RES"};
 SPECIAL_CASES_NUMBER = {};
 
 /* Retrieves catalog from Berkeley Time API */
@@ -26,7 +26,7 @@ function getCatalog() {
             // Key is a combination of course Abbr/Number/Title
             var courseTitle = value.title;
             var courseAbbr = value.abbreviation.replace(new RegExp("\\s+", "g"), "");
-            var courseNum = value.course_number
+            var courseNum = value.course_number;
             var courseKey = courseAbbr + courseNum + courseTitle.toLowerCase().replace(new RegExp("\\s+", "g"), "");
 
             toCourseIDS.set(courseKey, value.id);
@@ -53,7 +53,7 @@ function getInstructors() {
 
         // Finds course title for respective professors
         var courseTitle = item.parentNode.querySelector('.ls-course-title').innerHTML;
-        var simpleCourseTitle = courseTitle.toLowerCase().replace(new RegExp("\\s+", "g"), "")
+        var simpleCourseTitle = courseTitle.toLowerCase().replace(new RegExp("\\s+", "g"), "");
         
         // Finds course section name for respective professors
         var courseSectionName = item.parentNode.querySelector('.ls-section-name').innerHTML.trim().split(" ");
@@ -70,7 +70,7 @@ function getInstructors() {
             courseAbbr = SPECIAL_CASES_NUMBER[courseNum];
         }
 
-        var courseKey = courseAbbr + courseNum + simpleCourseTitle
+        var courseKey = courseAbbr + courseNum + simpleCourseTitle;
 
         // Parses instructor description into multiple professors if possible 
         var instructors = $(item).text().trim().replace(new RegExp("\\s+", "g"), " ").split(",");
@@ -135,7 +135,7 @@ function editPage(OR, LoD, NoR, additional, firstName, lastName, courseKey) {
     //Add grade distribution button
     var button = document.createElement("a");
     button.className = "grade-button";
-    button.innerText = "Grades!"
+    button.innerText = "Grades!";
 
     additional.appendChild(button);
     button.setAttribute("courseKey", courseKey);
@@ -159,7 +159,7 @@ function showInfo(button, parent, firstName, lastName) {
         if (!containerCheck) {
 
             // Retrieves courseID from map
-            var courseID = toCourseIDS.get(button.getAttribute("courseKey"))
+            var courseID = toCourseIDS.get(button.getAttribute("courseKey"));
 
             // If courseID is present, look it up, else create dummy button
             if (typeof courseID !== 'undefined') {
@@ -172,7 +172,7 @@ function showInfo(button, parent, firstName, lastName) {
                     var allGradeIDArr = [];
                     for (let i = 0; i < response.length; i++) { 
                         var instructor = response[i].instructor;
-                        var grade_id = response[i].grade_id
+                        var grade_id = response[i].grade_id;
                         if (instructor == button.getAttribute("instructor")) {
                             gradeIDArr.push(grade_id);
                         }
@@ -221,14 +221,14 @@ function showInfo(button, parent, firstName, lastName) {
                         var container = document.createElement("div");
                         container.className = "grade-container hide";
                         parent.append(container);
-                        container.className = "grade-container show" 
+                        container.className = "grade-container show";
                 });;
             } else {
                 // If courseID not present, set container to dummy container
                 var container = document.createElement("div");
                 container.className = "grade-container hide";
                 parent.append(container);
-                container.className = "grade-container show"   
+                container.className = "grade-container show";   
             }
         } else {
             // Shows popup when hovering button
@@ -251,7 +251,7 @@ function addGradeInfo(gradeDataURL, popup) {
 
     // Creates division on popup to display course/section gpas
     var bothGPA = document.createElement('div');
-    bothGPA.className = "grade-gpa"
+    bothGPA.className = "grade-gpa";
 
     var sectionGPA = document.createElement('span');
     var courseGPA = document.createElement('span');
@@ -264,7 +264,7 @@ function addGradeInfo(gradeDataURL, popup) {
         
         // Extracts percentages from json response
         for (let letter of grades) {
-            var percent = response[letter].percent
+            var percent = response[letter].percent;
             values.push(percent * 100);
         } 
 
@@ -344,7 +344,7 @@ function removeInfo(button, parent) {
     return function(){
         
         /* Hide container if container present */
-        var container = parent.querySelector(".grade-container")
+        var container = parent.querySelector(".grade-container");
         if (container) {
             container.className="grade-container hide";
         }   
