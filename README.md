@@ -1,4 +1,4 @@
-# Berkeley Schedule Extension
+## Berkeley Schedule Extension
 
 #### Chrome extension that improves the UC Berkeley class planning experience. Adds a variety of useful information to the Berkeley Class Schedule website.
 
