@@ -16,7 +16,7 @@
 - If no course grade data can be found, popup won't display
 
 #### Upcoming Features:
-- Links to Rate My Professor and Berkeley Time!
+- Links to Rate My Professor and Berkeley Time.
 
 
 
