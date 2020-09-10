@@ -35,7 +35,9 @@ function getCatalog() {
         addInfo();
     })
         .fail(function (Response) {
-        // Fails to get catalog, extension does nothing.
+        // Fails to get catalog, continue to RMP with dummy map
+        toCourseIDS = new Map();
+        addInfo();
     });;
 }
 
@@ -94,7 +96,7 @@ function getInstructors() {
 
 /* Retrieves instructor data from RateMyProfessor API */
 function lookUpInstructor(firstName, lastName, element, courseKey) {
-    const rmpAPI = "https://solr-aws-elb-production.ratemyprofessors.com//solr/rmp/select/?solrformat=true&rows=20&wt=json&json.wrf=noCB&callback=noCB&q="+ firstName + "+" + lastName +"&qf=teacherfirstname_t%5E2000+teacherlastname_t%5E2000+teacherfullname_t%5E2000+teacherfullname_autosuggest&bf=pow(total_number_of_ratings_i%2C2.1)&sort=score+desc&defType=edismax&siteName=rmp&rows=20&group=off&group.field=content_type_s&group.limit=20&fq=schoolid_s%3A1072"
+    const rmpAPI = "https://cors-anywhere.herokuapp.com/https://solr-aws-elb-production.ratemyprofessors.com//solr/rmp/select/?solrformat=true&rows=20&wt=json&json.wrf=noCB&callback=noCB&q="+ firstName + "+" + lastName +"&qf=teacherfirstname_t%5E2000+teacherlastname_t%5E2000+teacherfullname_t%5E2000+teacherfullname_autosuggest&bf=pow(total_number_of_ratings_i%2C2.1)&sort=score+desc&defType=edismax&siteName=rmp&rows=20&group=off&group.field=content_type_s&group.limit=20&fq=schoolid_s%3A1072"
     const request = $.ajax({url: rmpAPI}).done(function (response) {  
 
         // Parse json response from Rate My Professor into particular values
@@ -117,7 +119,11 @@ function lookUpInstructor(firstName, lastName, element, courseKey) {
         editPage(OR, LoD, NoR, element, firstName, lastName, courseKey);
     })
         .fail(function (Response) {
-        // Fails to get RMP call, extension does nothing.
+        // Fails to get RMP call, continue to Grades with dummy ratings
+        var OR = "--";
+        var LoD = "--";
+        var NoR = "--";
+        editPage(OR, LoD, NoR, element, firstName, lastName, courseKey);
     });;
 }
 
